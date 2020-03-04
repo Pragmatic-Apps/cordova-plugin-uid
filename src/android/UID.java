@@ -94,11 +94,18 @@ public class UID extends CordovaPlugin {
 	 */
 	public String getImei(Context context) {
 		final TelephonyManager mTelephony = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-		String imei = mTelephony.getDeviceId();
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-        		String Imei0Id = telephonyManager.getDeviceId(0); // hear 0 is slot number
-			if (null != Imei0Id && !Imei0Id.equals("000000000000000")) {
-			    IMEI_Number = Imei0Id;
+		String imei = mTelephony.getDeviceId(); // fallback
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+			// OREO USES GETIMEI
+                	String oreoImei = mTelephony.getImei();
+                        if (null != oreoImei && !oreoImei.equals("000000000000000")) {
+                            imei = oreoImei;
+                        }
+        	} else if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                	// MARSHMALLOW USE SLOTNUMBER
+        		String marshImei = mTelephony.getDeviceId(0); // hear 0 is slot number
+			if (null != marshImei && !marshImei.equals("000000000000000")) {
+			    imei = marshImei;
 			}
     		}
 		return imei;
